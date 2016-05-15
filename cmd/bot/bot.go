@@ -3,12 +3,15 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
@@ -133,6 +136,17 @@ var CENA *SoundCollection = &SoundCollection{
 	},
 }
 
+var MUSIC *SoundCollection = &SoundCollection{
+	Prefix: "ff",
+	Commands: []string{
+		"!music",
+		"!radio",
+	},
+	Sounds: []*Sound{
+		createSound("music", 1, 250),
+	},
+}
+
 var ETHAN *SoundCollection = &SoundCollection{
 	Prefix: "ethan",
 	Commands: []string{
@@ -216,7 +230,7 @@ func (s *SoundCollection) Random() *Sound {
 // https://github.com/nstafie/dca-rs
 // eg: dca-rs --raw -i <input wav file> > <output file>
 func (s *Sound) Load(c *SoundCollection) error {
-	path := fmt.Sprintf("audio/%v_%v.dca", c.Prefix, s.Name)
+	path := fmt.Sprintf("audio/%v_%v.asx", c.Prefix, s.Name)
 
 	file, err := os.Open(path)
 
